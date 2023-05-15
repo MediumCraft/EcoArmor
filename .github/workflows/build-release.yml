@@ -25,7 +25,8 @@ jobs:
 
       - name: Set outputs
         id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        #run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 17
         uses: actions/setup-java@v2
@@ -54,10 +55,10 @@ jobs:
           token: ${{ secrets.RELEASE_KEY }}
           files: |
             build/libs/*.jar
-          tag_name: commit-${{ steps.short_sha.outputs.sha_short }}
-          name: EcoArmor ${{ steps.short_sha.outputs.sha_short }}
+          tag_name: commit-${{ steps.vars.outputs.sha_short }}
+          name: EcoArmor ${{ steps.vars.outputs.sha_short }}
           body: |
-            Commit ${{ steps.short_sha.outputs.sha_short }}
+            Commit ${{ steps.vars.outputs.sha_short }}
             EcoArmor
           generate_release_notes: true
         env:
