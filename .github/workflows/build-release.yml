@@ -40,7 +40,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: ./gradlew build --full-stacktrace
+      
+      - name: Build with Gradle
+        run: ./gradlew build --full-stacktrace
       
       - name: Upload artifact
         uses: actions/upload-artifact@v2
