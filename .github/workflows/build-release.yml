@@ -1,3 +1,4 @@
+# Gradle
 name: Build & Release
 
 on:
@@ -41,6 +42,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       
+      - name: Gradle Permission
+        run: chmod +x ./gradlew
+      
       - name: Build with Gradle
         run: ./gradlew build --full-stacktrace
       
@@ -49,6 +53,16 @@ jobs:
         with:
           name: EcoArmor-${{ steps.vars.outputs.sha_short }}
           path: build/libs
+      
+      - name: Generate Release Draft
+        id: release-drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          token: ${{ secrets.RELEASE_KEY }}
+          config-path: .github/release-drafter.yml
+          name: Changelog Draft (Internal)
+          publish: false
+          tag: latest-changelog-draft
       
       - name: Release Files
         uses: softprops/action-gh-release@v1
@@ -61,6 +75,7 @@ jobs:
           body: |
             Commit ${{ steps.vars.outputs.sha_short }}
             EcoArmor
+            ${{ steps.release-drafter.outputs.body }}
           generate_release_notes: true
         env:
           GITHUB_REPOSITORY: MediumCraft/EcoArmor
