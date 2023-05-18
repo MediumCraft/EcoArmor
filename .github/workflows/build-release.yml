@@ -54,18 +54,6 @@ jobs:
           name: EcoArmor-${{ steps.vars.outputs.sha_short }}
           path: build/libs
       
-      #- name: Download git-chglog CLI
-        #run: |
-          # Download the git-chglog executable from the provided URL
-          #wget https://github.com/MediumCraft/Files/raw/main/git-chglog/bin/git-chglog
-          #chmod +x git-chglog
-          #./git-chglog --version
-
-      #- name: Generate Changelog
-        #run: |
-          # Generate the changelog using git-chglog
-          #./git-chglog --output CHANGELOG.md
-      
       - name: Release Files
         uses: softprops/action-gh-release@v1
         with: 
