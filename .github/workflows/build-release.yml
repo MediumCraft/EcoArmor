@@ -54,15 +54,17 @@ jobs:
           name: EcoArmor-${{ steps.vars.outputs.sha_short }}
           path: build/libs
       
-      - name: Generate Release Draft
-        id: release-drafter
-        uses: release-drafter/release-drafter@v5
-        with:
-          token: ${{ secrets.RELEASE_KEY }}
-          config-path: .github/release-drafter.yml
-          name: Changelog Draft (Internal)
-          publish: false
-          tag: latest-changelog-draft
+      - name: Download git-chglog CLI
+        run: |
+          # Download the git-chglog executable from the provided URL
+          wget https://github.com/MediumCraft/Files/raw/main/git-chglog/bin/git-chglog
+          chmod +x git-chglog
+          ./git-chglog --version
+
+      - name: Generate Changelog
+        run: |
+          # Generate the changelog using git-chglog
+          ./git-chglog --output CHANGELOG.md
       
       - name: Release Files
         uses: softprops/action-gh-release@v1
@@ -75,7 +77,7 @@ jobs:
           body: |
             Commit ${{ steps.vars.outputs.sha_short }}
             EcoArmor
-            ${{ steps.release-drafter.outputs.body }}
+            $(cat CHANGELOG.md)
           generate_release_notes: true
         env:
           GITHUB_REPOSITORY: MediumCraft/EcoArmor
