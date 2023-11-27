@@ -5,6 +5,8 @@ import com.willfp.eco.core.display.Display
 import com.willfp.eco.core.display.DisplayModule
 import com.willfp.eco.core.display.DisplayPriority
 import com.willfp.eco.core.fast.FastItemStack
+import com.willfp.eco.core.placeholder.context.placeholderContext
+import com.willfp.eco.util.formatEco
 import com.willfp.ecoarmor.sets.ArmorSlot
 import com.willfp.ecoarmor.sets.ArmorUtils
 import com.willfp.libreforge.SimpleProvidedHolder
@@ -56,7 +58,17 @@ class ArmorDisplay(plugin: EcoPlugin) : DisplayModule(plugin, DisplayPriority.LO
         val slotMeta = slotStack.itemMeta ?: return
 
         val tier = ArmorUtils.getTier(meta) ?: return
-        val lore = FastItemStack.wrap(slotStack).lore.map { it.replace("%tier%", tier.displayName) }.toMutableList()
+
+        val context = placeholderContext(
+            player = player,
+            item = itemStack
+        )
+
+        val lore = FastItemStack.wrap(slotStack).lore
+            .map { it.replace("%tier%", tier.displayName) }
+            .formatEco(context)
+            .toMutableList()
+
         meta.addItemFlags(*slotMeta.itemFlags.toTypedArray())
 
         if (meta.hasLore()) {
@@ -67,20 +79,18 @@ class ArmorDisplay(plugin: EcoPlugin) : DisplayModule(plugin, DisplayPriority.LO
             val lines = mutableListOf<String>()
 
             lines.addAll(if (ArmorUtils.isAdvanced(meta)) {
-                set.advancedHolder.conditions
-                    .getNotMetLines(player, SimpleProvidedHolder(set.advancedHolder))
+                SimpleProvidedHolder(set.advancedHolder)
+                    .getNotMetLines(player)
                     .map { Display.PREFIX + it }
             } else {
-                set.regularHolder.conditions
-                    .getNotMetLines(player, SimpleProvidedHolder(set.regularHolder))
+                SimpleProvidedHolder(set.regularHolder)
+                    .getNotMetLines(player)
                     .map { Display.PREFIX + it }
             })
 
             // Lovely.
-            val specificHolder = set.getSpecificHolder(itemStack)
             lines.addAll(
-                specificHolder?.holder?.conditions
-                    ?.getNotMetLines(player, specificHolder)
+                set.getSpecificHolder(itemStack)?.getNotMetLines(player)
                     ?.map { Display.PREFIX + it }
                     ?: emptyList()
             )
