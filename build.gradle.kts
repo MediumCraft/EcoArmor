@@ -40,6 +40,7 @@ allprojects {
         compileOnly("com.willfp:eco:6.56.0")
         compileOnly("org.jetbrains:annotations:23.0.0")
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+        implementation("com.willfp:libreforge:${libreforgeVersion}")
     }
 
     java {
@@ -50,6 +51,7 @@ allprojects {
     tasks {
         shadowJar {
             relocate("com.willfp.libreforge.loader", "com.willfp.ecoarmor.libreforge.loader")
+            relocate("com.willfp.libreforge", "com.willfp.ecoarmor.libreforge")
         }
 
         compileKotlin {
